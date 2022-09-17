@@ -1,8 +1,10 @@
 const path = require("path");
 const postCSSPlugins = [
-  require("postcss-simple-vars"),
-  require("postcss-nested"),
+  require("postcss-import"),
   require("autoprefixer"),
+  require("postcss-nested"),
+  require("postcss-simple-vars"),
+  require("postcss-mixins"),
 ];
 
 module.exports = {
@@ -12,17 +14,35 @@ module.exports = {
     path: path.resolve(__dirname, "app"),
     filename: "bundle.js",
   },
-  watch: true,
+  devtool: "inline-source-map",
+  devServer: {
+    watchFiles: "./app/**/*.html",
+    static: {
+      directory: path.join(__dirname, "app"),
+    },
+    // liveReload: false,
+    hot: true,
+    port: 3000,
+    host: "0.0.0.0",
+  },
   module: {
     rules: [
       {
         test: /\.css$/i,
+        exclude: /node_modules/,
         use: [
           "style-loader",
-          "css-loader",
+          {
+            loader: "css-loader",
+            options: { importLoaders: 1 },
+          },
           {
             loader: "postcss-loader",
-            options: { postcssOptions: { plugins: postCSSPlugins } },
+            options: {
+              postcssOptions: {
+                plugins: postCSSPlugins,
+              },
+            },
           },
         ],
       },
