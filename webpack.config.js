@@ -4,7 +4,17 @@ const postCSSPlugins = [
   require("autoprefixer"),
   require("postcss-nested"),
   require("postcss-simple-vars"),
-  require("postcss-mixins"),
+  require("postcss-mixins")({
+    mixins: {
+      clearfix: {
+        "&::after": {
+          content: '""',
+          display: "table",
+          clear: "both",
+        },
+      },
+    },
+  }),
 ];
 
 module.exports = {
@@ -14,7 +24,6 @@ module.exports = {
     path: path.resolve(__dirname, "app"),
     filename: "bundle.js",
   },
-  devtool: "inline-source-map",
   devServer: {
     watchFiles: "./app/**/*.html",
     static: {
@@ -34,7 +43,9 @@ module.exports = {
           "style-loader",
           {
             loader: "css-loader",
-            options: { importLoaders: 1 },
+            options: {
+              importLoaders: 1,
+            },
           },
           {
             loader: "postcss-loader",
